@@ -1,4 +1,5 @@
-﻿--- ****  Workshop Basic Query 1 **** ---
+﻿--3/7/2025 15:14 PM
+--- ****  Workshop Basic Query 1 **** ---
 
 --1. แสดงข้อมูลทั้งหมดของพนักงานทุกรายการ
 SELECT * FROM Employees;
@@ -65,11 +66,19 @@ WHERE CompanyName LIKE 'F%n';
 SELECT CustomerID, CompanyName, Country 
 FROM Customers  
 WHERE (CompanyName LIKE 'A%n' OR CompanyName LIKE 'F%n' OR CompanyName LIKE 'S%n');
+--_________________________________________________________________
+SELECT CustomerID, CompanyName, Country 
+FROM Customers  
+WHERE CompanyName LIKE '[AFS]%n'; -- A หรือ F หรือ S ลงท้าย n
 
 --19. แสดงรหัสลูกค้า ชื่อบริษัท ชื่อประเทศ เฉพาะลูกค้าที่มีชื่อบริษัทยาว 20 ตัวอักษร 
 SELECT CustomerID, CompanyName, Country 
 FROM Customers
 WHERE LEN(CompanyName) = 20;
+--_________________________________________________________________
+SELECT CustomerID, CompanyName, Country 
+FROM Customers
+WHERE CompanyName LIKE '____________________'; -- 20 ตัวอักษร
 
 --20. แสดงรหัสลูกค้า ชื่อบริษัท ชื่อประเทศ เฉพาะลูกค้าที่มีชื่อบริษัทไม่ได้ขึ้นต้นชื่อด้วยอักษร T หรือ W หรือ D
 SELECT CustomerID, CompanyName, Country 
