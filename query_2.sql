@@ -1,4 +1,7 @@
 ﻿--3/7/2025 15:28 PM
+--Student ID 66040233110
+--Student Name นาย ยศวริศ อาจนนท์ลา
+
 
 --- ****  Workshop Basic Query 2 **** ---
 
