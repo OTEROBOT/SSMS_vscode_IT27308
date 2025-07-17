@@ -5,42 +5,97 @@
 
  -- ***** Select From Multi-table *******
  --1. จงแสดงรหัสสินค้า ชื่อสินค้า ราคาต่อหน่วย เฉพาะสินค้าประเภท Seafood
+
  --แบบ Product
- 
+ SELECT     ProductID, ProductName, UnitPrice
+ FROM       Products As P , Categories As C
+ WHERE      P.CategoryID = C.CategoryID AND CategoryName = 'Seafood';
 
 --แบบ Join
+SELECT      *
+FROM        Products AS P INNER JOIN Categories AS C ON 
+                P.CategoryID = C.CategoryID
+WHERE       C.CategoryName = 'Seafood';
 
 ---------------------------------------------------------------------
 --2.จงแสดงชื่อบริษัทลูกค้า ประเทศที่ลูกค้าอยู่ และจำนวนใบสั่งซื้อที่ลูกค้านั้น ๆ ที่รายการสั่งซื้อในปี 1997
---แบบ Product
-S
---แบบ Join
 
+--แบบ Product
+SELECT     C.CompanyName, C.Country, COUNT(O.OrderID) AS OrderCount
+FROM       Customers As C , Orders As O
+WHERE      C.CustomerID = O.CustomerID AND YEAR(O.OrderDate) = 1997
+GROUP BY   C.CompanyName, C.Country;
+
+--แบบ Join
+SELECT     C.CompanyName, C.Country, COUNT(O.OrderID) AS OrderCount
+FROM       Customers AS C INNER JOIN Orders AS O ON C.CustomerID = O.CustomerID
+WHERE      YEAR(O.OrderDate) = 1997
+GROUP BY   C.CompanyName, C.Country;
 
 ---------------------------------------------------------------------
 --3. จงแสดงรหัสสินค้า ชื่อสินค้า ราคาต่อหน่วย ชื่อบริษัทและประเทศที่จัดจำหน่ายสินค้านั้น ๆ
+
 --แบบ Product
+SELECT     P.ProductID, P.ProductName, P.UnitPrice, S.CompanyName, S.Country
+FROM       Products AS P, Suppliers AS S
+WHERE      P.SupplierID = S.SupplierID;
 
 --แบบ Join
+SELECT     P.ProductID, P.ProductName, P.UnitPrice, S.CompanyName, S.Country
+FROM       Products AS P INNER JOIN Suppliers AS S ON P.SupplierID = S.SupplierID;
 
 
 ---------------------------------------------------------------------
---4. ชื่อ-นามสกุลของพนักงานขาย ตำแหน่งงาน และจำนวนใบสั่งซื้อที่แต่ละคนเป็นผู้ทำรายการขาย เฉพาะที่ทำรายการขายช่วงเดือนมกราคม-เมษายน ปี 1997 และแสดงเฉพาะพนักงานที่ทำรายการขายมากกว่า   10 ใบสั่งซื้อ 
+--4. ชื่อ-นามสกุลของพนักงานขาย ตำแหน่งงาน และจำนวนใบสั่งซื้อที่แต่ละคนเป็นผู้ทำรายการขาย 
+--เฉพาะที่ทำรายการขายช่วงเดือนมกราคม-เมษายน ปี 1997 และแสดงเฉพาะพนักงานที่ทำรายการขายมากกว่า 10 ใบสั่งซื้อ
+
 --แบบ Product
+SELECT     E.FirstName, E.LastName, E.Title, COUNT(O.OrderID) AS OrderCount
+FROM       Employees AS E, Orders AS O
+WHERE      E.EmployeeID = O.EmployeeID AND 
+           MONTH(O.OrderDate) BETWEEN 1 AND 4 AND YEAR(O.OrderDate) = 1997
+GROUP BY   E.FirstName, E.LastName, E.Title
+HAVING     COUNT(O.OrderID) > 10;
 
 --แบบ Join
+SELECT     E.FirstName, E.LastName, E.Title, COUNT(O.OrderID) AS OrderCount
+FROM       Employees AS E INNER JOIN Orders AS O ON E.EmployeeID = O.EmployeeID
+WHERE      MONTH(O.OrderDate) BETWEEN 1 AND 4 AND YEAR(O.OrderDate) = 1997
+GROUP BY   E.FirstName, E.LastName, E.Title
+HAVING     COUNT(O.OrderID) > 10;
 
 ---------------------------------------------------------------------
 --5.จงแสดงรหัสสินค้า ชื่อสินค้า ยอดขายรวม(ไม่คิดส่วนลด) ของสินค้าแต่ละชนิด
+
 --แบบ Product
+SELECT     P.ProductID, P.ProductName, SUM(OD.UnitPrice * OD.Quantity) AS SumPrice
+FROM       Products AS P, [Order Details] AS OD
+WHERE      P.ProductID = OD.ProductID
+GROUP BY   P.ProductID, P.ProductName;
 
 --แบบ Join
+SELECT     P.ProductID, P.ProductName, SUM(OD.UnitPrice * OD.Quantity) AS SumPrice
+FROM       Products AS P INNER JOIN [Order Details] AS OD ON P.ProductID = OD.ProductID
+GROUP BY   P.ProductID, P.ProductName;
 
 ---------------------------------------------------------------------
---6.จงแสดงรหัสบริษัทจัดส่ง ชื่อบริษัทจัดส่ง จำนวนใบสั่งซื้อที่จัดส่งไปยังประเทศสหรัฐอเมริกา, อิตาลี, สหราชอาณาจักร, แคนาดา ในเดือนมกราคม-สิงหาคม ปี 1997 
+--6.จงแสดงรหัสบริษัทจัดส่ง ชื่อบริษัทจัดส่ง จำนวนใบสั่งซื้อที่จัดส่งไปยังประเทศสหรัฐอเมริกา, 
+--อิตาลี, สหราชอาณาจักร, แคนาดา ในเดือนมกราคม-สิงหาคม ปี 1997 
+
 --แบบ Product
+SELECT     S.ShipperID, S.CompanyName, COUNT(O.OrderID) AS OrderCount
+FROM       Shippers AS S, Orders AS O
+WHERE      S.ShipperID = O.ShipVia AND 
+           O.ShipCountry IN ('USA', 'Italy', 'UK', 'Canada') AND 
+           MONTH(O.OrderDate) BETWEEN 1 AND 8 AND YEAR(O.OrderDate) = 1997
+GROUP BY   S.ShipperID, S.CompanyName;
 
 --แบบ Join
+SELECT     S.ShipperID, S.CompanyName, COUNT(O.OrderID) AS OrderCount
+FROM       Shippers AS S INNER JOIN Orders AS O ON S.ShipperID = O.ShipVia
+WHERE      O.ShipCountry IN ('USA', 'Italy', 'UK', 'Canada') AND 
+           MONTH(O.OrderDate) BETWEEN 1 AND 8 AND YEAR(O.OrderDate) = 1997
+GROUP BY   S.ShipperID, S.CompanyName;
 
 
 ---------------------------------------------------------------------
