@@ -102,19 +102,51 @@ GROUP BY   S.ShipperID, S.CompanyName;
 -- *** 3 ตาราง ****
 /*7 : จงแสดงเลขเดือน ยอดสั่งซื้อรวม(ไม่คิดส่วนลด) เฉพาะรายการสั่งซื้อที่ทำรายการขายในปี 1996 
 และจัดส่งไปยังประเทศสหราชอาณาจักร,เบลเยี่ยม, โปรตุเกส */
---แบบ Product
+--**แบบ Product**--
+
+SELECT MONTH(O.OrderDate) AS Month, 
+       SUM(OD.UnitPrice * OD.Quantity) AS TotalSales
+FROM [Order Details] AS OD, Orders AS O
+WHERE OD.OrderID = O.OrderID 
+  AND O.ShipCountry IN ('UK', 'Belgium', 'Portugal') 
+  AND YEAR(O.OrderDate) = 1996
+GROUP BY MONTH(O.OrderDate);
 
 
---แบบ Join
+--**แบบ Join**--
+SELECT MONTH(O.OrderDate) AS Month, 
+       SUM(OD.UnitPrice * OD.Quantity) AS TotalSales
+FROM Orders AS O 
+INNER JOIN [Order Details] AS OD ON O.OrderID = OD.OrderID
+WHERE O.ShipCountry IN ('UK', 'Belgium', 'Portugal') 
+  AND YEAR(O.OrderDate) = 1996
+GROUP BY MONTH(O.OrderDate);
+
 
 --------------------------------------------------------------------------------
 
 /*8 : จงแสดงข้อมูลรหัสลูกค้า ชื่อบริษัทลูกค้า และยอดรวม(ไม่คิดส่วนลด) เฉพาะใบสั่งซื้อที่ทำรายการสั่งซื้อในเดือน มค. ปี 1997 
 จัดเรียงข้อมูลตามยอดสั่งซื้อมากไปหาน้อย*/
 --แบบ Product
+SELECT     C.CustomerID, C.CompanyName, SUM(OD.UnitPrice * OD.Quantity) AS TotalSales
+FROM       Customers AS C, Orders AS O, [Order Details] AS OD
+WHERE      C.CustomerID = O.CustomerID 
+  AND O.OrderID = OD.OrderID 
+  AND MONTH(O.OrderDate) = 1 
+  AND YEAR(O.OrderDate) = 1997
+GROUP BY   C.CustomerID, C.CompanyName
+ORDER BY   TotalSales DESC;
+
 
 
 --แบบ Join
+SELECT     C.CustomerID, C.CompanyName, SUM(OD.UnitPrice * OD.Quantity) AS TotalSales
+FROM       Customers AS C INNER JOIN Orders AS O ON C.CustomerID = O.CustomerID
+INNER JOIN [Order Details] AS OD ON O.OrderID = OD.OrderID
+WHERE      MONTH(O.OrderDate) = 1 AND YEAR(O.OrderDate) = 1997
+GROUP BY   C.CustomerID, C.CompanyName
+ORDER BY   TotalSales DESC;
+
 
 ---------------------------------------------------------------------------------
 
@@ -158,9 +190,29 @@ GROUP BY   S.ShipperID, S.CompanyName;
 --------------------------------------------------------------------------
 /*14 : จงแสดงรหัสสินค้า ชื่อสินค้า ยอดขายรวม เฉพาะสินค้าที่นำมาจัดจำหน่ายจากประเทศญี่ปุ่น และมีการสั่งซื้อในปี 1997 และจัดส่งไปยังประเทศสหรัฐอเมริกา */
 --แบบ Product
+SELECT     P.ProductID, P.ProductName, SUM(OD.UnitPrice * OD.Quantity) AS TotalSales
+FROM       Products AS P, [Order Details] AS OD, Orders AS O, Suppliers AS S
+WHERE      P.ProductID = OD.ProductID 
+  AND OD.OrderID = O.OrderID 
+  AND P.SupplierID = S.SupplierID 
+  AND S.Country = 'Japan' 
+  AND YEAR(O.OrderDate) = 1997 
+  AND O.ShipCountry = 'USA'
+  GROUP BY P.ProductID, P.ProductName;
 
 
 --แบบ Join
+SELECT     P.ProductID, P.ProductName, SUM(OD.UnitPrice * OD.Quantity) AS TotalSales
+FROM       Products AS P
+INNER JOIN [Order Details] AS OD ON P.ProductID = OD.ProductID
+INNER JOIN Orders AS O ON OD.OrderID = O.OrderID
+INNER JOIN Suppliers AS S ON P.SupplierID = S.SupplierID
+WHERE      S.Country = 'Japan' 
+  AND YEAR(O.OrderDate) = 1997 
+  AND O.ShipCountry = 'USA'
+GROUP BY   P.ProductID, P.ProductName;
+
+
 
 ----------------------------------------------------------------------------
 -- *** 5 ตาราง ***

@@ -88,8 +88,3 @@ WHERE CompanyName LIKE '____________________'; -- 20 ตัวอักษร
 SELECT CustomerID, CompanyName, Country 
 FROM Customers
 WHERE CompanyName NOT LIKE 'T%' AND CompanyName NOT LIKE 'W%' AND CompanyName NOT LIKE 'D%';
-
-
-
-
-
