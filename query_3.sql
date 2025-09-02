@@ -218,9 +218,27 @@ GROUP BY   P.ProductID, P.ProductName;
 -- *** 5 ตาราง ***
 /*15 : จงแสดงรหัสลูกค้า ชื่อบริษัทลูกค้า ยอดสั่งซื้อรวมของการสั่งซื้อสินค้าประเภท Beverages ของลูกค้าแต่ละบริษัท  และสั่งซื้อในปี 1997 จัดเรียงตามยอดสั่งซื้อจากมากไปหาน้อย*/
 --แบบ Product
+SELECT     C.CustomerID, C.CompanyName, SUM(OD.UnitPrice * OD.Quantity) AS TotalSales
+FROM       Customers AS C, Orders AS O, [Order Details] AS OD, Products AS P, Categories AS CA
+WHERE      C.CustomerID = O.CustomerID 
+  AND O.OrderID = OD.OrderID 
+  AND OD.ProductID = P.ProductID 
+  AND P.CategoryID = CA.CategoryID 
+  AND CA.CategoryName = 'Beverages' 
+  AND YEAR(O.OrderDate) = 1997
 
 
 --แบบ Join
+SELECT     C.CustomerID, C.CompanyName, SUM(OD.UnitPrice * OD.Quantity) AS TotalSales
+FROM       Customers AS C
+                          INNER JOIN Orders           AS O  ON C.CustomerID = O.CustomerID
+                          INNER JOIN [Order Details]  AS OD ON O.OrderID    = OD.OrderID
+                          INNER JOIN Products         AS P  ON OD.ProductID = P.ProductID
+                          INNER JOIN Categories       AS CA ON P.CategoryID = CA.CategoryID
+WHERE      CA.CategoryName = 'Beverages' 
+                          AND YEAR(O.OrderDate) = 1997
+GROUP BY   C.CustomerID, C.CompanyName
+
 
 
 ---------------------------------------------------------------------------
