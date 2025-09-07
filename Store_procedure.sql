@@ -68,3 +68,47 @@ EXEC dbo.WorkShop9_sp @ProductID = 1;
 
 
 -------------------------------------------------------------------------------
+
+CREATE PROCEDURE Proc_Customer_Orders
+    @CustomerID nchar(5)
+AS
+BEGIN
+    SELECT c.CustomerID, c.CompanyName, c.ContactName, c.ContactTitle,
+           o.OrderID, o.OrderDate, o.ShipCountry,
+           SUM(od.Quantity * od.UnitPrice) AS TotalOrder
+    FROM Customers c
+    INNER JOIN Orders o ON c.CustomerID = o.CustomerID
+    INNER JOIN [Order Details] od ON o.OrderID = od.OrderID
+    WHERE c.CustomerID = @CustomerID
+    GROUP BY c.CustomerID, c.CompanyName, c.ContactName, c.ContactTitle,
+             o.OrderID, o.OrderDate, o.ShipCountry
+    ORDER BY o.OrderDate;
+END;
+
+EXEC Proc_Customer_Orders 'ALFKI';
+
+EXEC Proc_Customer_Orders @CustomerID = 'ALFKI';
+
+-------------------------------------------------------------------------------
+
+--ของเตินร์
+
+CREATE PROCEDURE Proc_Customer_Order
+    @CustomerID NCHAR(5) = NULL
+AS
+BEGIN
+    SELECT 
+        YEAR(OrderDate) AS Year_Order,
+        SUM(UnitPrice * Quantity) AS Sum_Order
+    FROM 
+        Orders AS O
+        INNER JOIN [Order Details] AS OD ON O.[OrderID] = OD.[OrderID]
+    WHERE 
+        (@CustomerID IS NULL OR O.CustomerID = @CustomerID)
+    GROUP BY 
+        YEAR(OrderDate)
+    ORDER BY 
+        YEAR(OrderDate)
+END
+
+-------------------------------------------------------------------------------
